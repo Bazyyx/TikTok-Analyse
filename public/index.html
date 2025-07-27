@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>TikTok Analyse Tool</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f8f9fa; }
+    input, button { padding: 0.7rem; font-size: 1rem; width: 100%; margin-top: 1rem; }
+    h2 { margin-bottom: 1rem; }
+    #status { margin-top: 1rem; color: green; }
+  </style>
+</head>
+<body>
+  <h2>📊 TikTok Analyse</h2>
+  <input type="text" id="username" placeholder="TikTok Nutzername (ohne @)" />
+  <button onclick="analyze()">Analysieren & Speichern</button>
+  <p id="status"></p>
+
+  <script>
+    async function analyze() {
+      const username = document.getElementById('username').value.trim();
+      const status = document.getElementById('status');
+      if (!username) return alert("Bitte TikTok-Namen eingeben");
+
+      status.textContent = "Analysiere...";
+
+      try {
+        const res = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          status.textContent = `Gespeichert: ${data.followers} Follower, ${data.likes} Likes, ${data.videos} Videos.`;
+        } else {
+          status.textContent = `Fehler: ${data.error}`;
+        }
+      } catch (err) {
+        status.textContent = "Verbindungsfehler oder Serverproblem.";
+      }
+    }
+  </script>
+</body>
+</html>
